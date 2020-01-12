@@ -1,0 +1,71 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Parsing JSON Array By Riko Software'
+  ClientHeight = 454
+  ClientWidth = 864
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnShow = FormShow
+  DesignSize = (
+    864
+    454)
+  PixelsPerInch = 120
+  TextHeight = 16
+  object Label1: TLabel
+    Left = 16
+    Top = 8
+    Width = 95
+    Height = 16
+    Caption = 'JSON Array dari '
+  end
+  object Memo1: TMemo
+    Left = 8
+    Top = 40
+    Width = 848
+    Height = 145
+    Anchors = [akLeft, akTop, akRight]
+    ReadOnly = True
+    ScrollBars = ssBoth
+    TabOrder = 0
+    ExplicitWidth = 657
+  end
+  object Grid: TStringGrid
+    Left = 8
+    Top = 208
+    Width = 848
+    Height = 221
+    Anchors = [akLeft, akTop, akRight]
+    ColCount = 7
+    FixedCols = 0
+    RowCount = 1
+    FixedRows = 0
+    TabOrder = 1
+    ExplicitWidth = 657
+  end
+  object IdHTTP1: TIdHTTP
+    AllowCookies = True
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = -1
+    Request.ContentRangeStart = -1
+    Request.ContentRangeInstanceLength = -1
+    Request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    Request.Ranges.Units = 'bytes'
+    Request.Ranges = <>
+    HTTPOptions = [hoForceEncodeParams]
+    Left = 8
+    Top = 392
+  end
+end
