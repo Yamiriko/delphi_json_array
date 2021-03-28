@@ -62,6 +62,7 @@ object Form1: TForm1
     Height = 25
     Caption = 'GET'
     TabOrder = 2
+    OnClick = btnGetClick
   end
   object btnPost: TButton
     Left = 417
@@ -81,6 +82,7 @@ object Form1: TForm1
     TabOrder = 4
   end
   object IdHTTP1: TIdHTTP
+    IOHandler = IdSSLIOHandlerSocketOpenSSL1
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -94,7 +96,23 @@ object Form1: TForm1
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 8
-    Top = 392
+    Left = 32
+    Top = 376
+  end
+  object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
+    MaxLineAction = maException
+    Port = 0
+    DefaultPort = 0
+    SSLOptions.Method = sslvSSLv23
+    SSLOptions.SSLVersions = [sslvSSLv2, sslvSSLv3, sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2]
+    SSLOptions.Mode = sslmUnassigned
+    SSLOptions.VerifyMode = []
+    SSLOptions.VerifyDepth = 0
+    Left = 160
+    Top = 368
+  end
+  object IdAntiFreeze1: TIdAntiFreeze
+    Left = 376
+    Top = 368
   end
 end

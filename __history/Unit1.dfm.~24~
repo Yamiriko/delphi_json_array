@@ -4,7 +4,7 @@ object Form1: TForm1
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Parsing JSON Array By Riko Software'
-  ClientHeight = 437
+  ClientHeight = 454
   ClientWidth = 864
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,33 +14,38 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnShow = FormShow
   DesignSize = (
     864
-    437)
+    454)
   PixelsPerInch = 120
   TextHeight = 16
   object Label1: TLabel
-    Left = 16
-    Top = 8
-    Width = 95
+    Left = 8
+    Top = 24
+    Width = 319
     Height = 16
-    Caption = 'JSON Array dari '
+    Caption = 'Klik Button Disebelah untuk menampilkan JSON Array  : '
+  end
+  object Label2: TLabel
+    Left = 520
+    Top = 24
+    Width = 96
+    Height = 16
+    Caption = 'Status Koneksi : '
   end
   object Memo1: TMemo
     Left = 8
-    Top = 40
+    Top = 52
     Width = 848
-    Height = 145
+    Height = 167
     Anchors = [akLeft, akTop, akRight]
     ReadOnly = True
     ScrollBars = ssBoth
     TabOrder = 0
-    ExplicitWidth = 657
   end
   object Grid: TStringGrid
     Left = 8
-    Top = 208
+    Top = 225
     Width = 848
     Height = 221
     Anchors = [akLeft, akTop, akRight]
@@ -49,9 +54,35 @@ object Form1: TForm1
     RowCount = 1
     FixedRows = 0
     TabOrder = 1
-    ExplicitWidth = 657
+  end
+  object btnGet: TButton
+    Left = 336
+    Top = 21
+    Width = 75
+    Height = 25
+    Caption = 'GET'
+    TabOrder = 2
+    OnClick = btnGetClick
+  end
+  object btnPost: TButton
+    Left = 417
+    Top = 21
+    Width = 75
+    Height = 25
+    Caption = 'POST'
+    TabOrder = 3
+    OnClick = btnPostClick
+  end
+  object edtStatus: TEdit
+    Left = 616
+    Top = 22
+    Width = 240
+    Height = 24
+    ReadOnly = True
+    TabOrder = 4
   end
   object IdHTTP1: TIdHTTP
+    IOHandler = IdSSLIOHandlerSocketOpenSSL1
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -65,7 +96,17 @@ object Form1: TForm1
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 8
-    Top = 392
+    Left = 32
+    Top = 376
+  end
+  object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
+    MaxLineAction = maException
+    Port = 0
+    DefaultPort = 0
+    SSLOptions.Mode = sslmUnassigned
+    SSLOptions.VerifyMode = []
+    SSLOptions.VerifyDepth = 0
+    Left = 128
+    Top = 368
   end
 end

@@ -5,7 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uLkJSON, Vcl.StdCtrls, IdBaseComponent,
-  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids;
+  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids,
+  IdServerIOHandler, IdSSL, IdSSLOpenSSL, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack;
 
 type
   TForm1 = class(TForm)
@@ -17,13 +19,16 @@ type
     btnPost: TButton;
     Label2: TLabel;
     edtStatus: TEdit;
+    IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     procedure btnPostClick(Sender: TObject);
+    procedure btnGetClick(Sender: TObject);
   private
     { Private declarations }
     procedure baca_json_post;
     procedure buattabel_post;
     procedure buattabel_get;
     procedure baca_json_get;
+    procedure reset_grid;
   public
     { Public declarations }
   end;
@@ -41,15 +46,38 @@ implementation
 
 {$R *.dfm}
 
+procedure TForm1.btnGetClick(Sender: TObject);
+begin
+  reset_grid;
+  buattabel_get;
+  baca_json_get;
+end;
+
 procedure TForm1.btnPostClick(Sender: TObject);
 begin
+  reset_grid;
   buattabel_post;
   baca_json_post;
+end;
+
+procedure TForm1.reset_grid;
+var
+  I: Integer;
+begin
+  for I := 0 to Grid.ColCount - 1 do
+    Grid.Cols[I].Clear;
+  Grid.RowCount := 1;
 end;
 
 procedure TForm1.buattabel_post;
 begin
   with Grid do begin
+    RowCount := 2;
+    ColCount := 7;
+    FixedCols := 1;
+    FixedRows := 1;
+    ScrollBars := ssBoth;
+
     Cells[0,0]:='No.';
     Cells[1,0]:='ID';
     Cells[2,0]:='Nama Lengkap';
@@ -65,18 +93,18 @@ begin
     ColWidths[4]:=200;
     ColWidths[5]:=200;
     ColWidths[6]:=200;
-
-    RowCount := 2;
-    ColCount := 7;
-    FixedCols := 1;
-    FixedRows := 1;
-    ScrollBars := ssBoth;
   end;
 end;
 
 procedure TForm1.buattabel_get;
 begin
   with Grid do begin
+    RowCount := 2;
+    ColCount := 4;
+    FixedCols := 1;
+    FixedRows := 1;
+    ScrollBars := ssBoth;
+
     Cells[0,0]:='No.';
     Cells[1,0]:='Nama';
     Cells[2,0]:='Negara';
@@ -86,12 +114,6 @@ begin
     ColWidths[1]:=250;
     ColWidths[2]:=200;
     ColWidths[3]:=200;
-
-    RowCount := 2;
-    ColCount := 4;
-    FixedCols := 1;
-    FixedRows := 1;
-    ScrollBars := ssBoth;
   end;
 end;
 
@@ -107,6 +129,7 @@ begin
       Request.ContentType := kontentipe;
       HandleRedirects := true;
       hasil_fungsi := Post(urlnya,isi_request_post);
+      ProtocolVersion := pv1_1;
     end;
   except on E: Exception do
     hasil_fungsi := 'error';
@@ -137,7 +160,7 @@ end;
 
 procedure TForm1.baca_json_post;
 begin
-  urlnya := 'http://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
+  urlnya := 'https://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
   postRequest := TStringList.Create;
   postRequest.Add('pengguna=Riko');
   postRequest.Add('sandi=riko_software');
@@ -195,20 +218,15 @@ begin
     for i := 0 to js.Count - 1 do begin
       //Load Data Ke Grid
       Grid.Cells[0,i+1] := IntToStr(i+1)+'.';
-      Grid.Cells[1, i + 1] := VarToStr(js.Child[i].Field['idku'].Value);
-      Grid.Cells[2, i + 1] := VarToStr(js.Child[i].Field['nama_lengkap'].Value);
-      Grid.Cells[3, i + 1] := VarToStr(js.Child[i].Field['nama_panggilan'].Value);
-      Grid.Cells[4, i + 1] := VarToStr(js.Child[i].Field['jenis_kelamin'].Value);
-      Grid.Cells[5, i + 1] := VarToStr(js.Child[i].Field['alamat'].Value);
-      Grid.Cells[6, i + 1] := VarToStr(js.Child[i].Field['kota'].Value);
+      Grid.Cells[1, i + 1] := VarToStr(js.Child[i].Field['Name'].Value);
+      Grid.Cells[2, i + 1] := VarToStr(js.Child[i].Field['City'].Value);
+      Grid.Cells[3, i + 1] := VarToStr(js.Child[i].Field['Country'].Value);
     end;
 
     js.Free;
 
     //tampilkan status jsonnya ke edtStatus
-    js_pesan := TlkJSON.ParseText(hasil) as TlkJSONObject;
-    edtStatus.Text := VarToStr(js_pesan.Field['pesan'].Value);
-    js_pesan.Free;
+    edtStatus.Text := 'Tidak Ada Statusnya';
   except on E: Exception do
     Memo1.Lines.Add('Error bro : '#13#10 + E.Message);
   end;

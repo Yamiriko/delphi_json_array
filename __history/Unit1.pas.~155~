@@ -5,7 +5,10 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uLkJSON, Vcl.StdCtrls, IdBaseComponent,
-  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids;
+  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids,
+  IdServerIOHandler, IdSSL, IdSSLOpenSSL, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, System.Net.URLClient, System.Net.HttpClient,
+  System.Net.HttpClientComponent;
 
 type
   TForm1 = class(TForm)
@@ -17,6 +20,8 @@ type
     btnPost: TButton;
     Label2: TLabel;
     edtStatus: TEdit;
+    IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
+    NetHTTPClient1: TNetHTTPClient;
     procedure btnPostClick(Sender: TObject);
     procedure btnGetClick(Sender: TObject);
   private
@@ -69,6 +74,12 @@ end;
 procedure TForm1.buattabel_post;
 begin
   with Grid do begin
+    RowCount := 2;
+    ColCount := 7;
+    FixedCols := 1;
+    FixedRows := 1;
+    ScrollBars := ssBoth;
+
     Cells[0,0]:='No.';
     Cells[1,0]:='ID';
     Cells[2,0]:='Nama Lengkap';
@@ -84,18 +95,17 @@ begin
     ColWidths[4]:=200;
     ColWidths[5]:=200;
     ColWidths[6]:=200;
-
-    RowCount := 2;
-    ColCount := 7;
-    FixedCols := 1;
-    FixedRows := 1;
-    ScrollBars := ssBoth;
   end;
 end;
 
 procedure TForm1.buattabel_get;
 begin
   with Grid do begin
+    RowCount := 2;
+    ColCount := 4;
+    FixedCols := 1;
+    FixedRows := 1;
+    ScrollBars := ssBoth;
 
     Cells[0,0]:='No.';
     Cells[1,0]:='Nama';
@@ -106,12 +116,6 @@ begin
     ColWidths[1]:=250;
     ColWidths[2]:=200;
     ColWidths[3]:=200;
-
-    RowCount := 2;
-    ColCount := 4;
-    FixedCols := 1;
-    FixedRows := 1;
-    ScrollBars := ssBoth;
   end;
 end;
 
@@ -127,6 +131,7 @@ begin
       Request.ContentType := kontentipe;
       HandleRedirects := true;
       hasil_fungsi := Post(urlnya,isi_request_post);
+      ProtocolVersion := pv1_1;
     end;
   except on E: Exception do
     hasil_fungsi := 'error';
@@ -157,7 +162,7 @@ end;
 
 procedure TForm1.baca_json_post;
 begin
-  urlnya := 'http://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
+  urlnya := 'https://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
   postRequest := TStringList.Create;
   postRequest.Add('pengguna=Riko');
   postRequest.Add('sandi=riko_software');

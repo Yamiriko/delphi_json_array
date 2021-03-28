@@ -5,13 +5,15 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uLkJSON, Vcl.StdCtrls, IdBaseComponent,
-  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids;
+  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, Vcl.Grids,
+  IdServerIOHandler, IdSSL, IdSSLOpenSSL, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, System.Net.URLClient, System.Net.HttpClient,
+  System.Net.HttpClientComponent, IdAntiFreezeBase, IdAntiFreeze;
 
 type
   TForm1 = class(TForm)
     Memo1: TMemo;
     Label1: TLabel;
-    IdHTTP1: TIdHTTP;
     Grid: TStringGrid;
     btnGet: TButton;
     btnPost: TButton;
@@ -118,15 +120,35 @@ function hubungkan_post(var urlnya : string; isi_request_post : TStringList; kon
 var
   hasil_fungsi : string;
   koneksi : TIdHTTP;
+  IOHendelnya : TIdSSLIOHandlerSocketOpenSSL;
+  AntiHeng : TIdAntiFreeze;
 begin
   try
     koneksi := TIdHTTP.Create(nil);
+
+    //Konek Ke HTTPS
+    IOHendelnya := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+    IOHendelnya.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
+    //Konek Ke HTTPS
+
+    //Anti Heng
+    AntiHeng := TIdAntiFreeze.Create(nil);
+    AntiHeng.IdleTimeOut:=500;
+    AntiHeng.OnlyWhenIdle:=True;
+    AntiHeng.Active:=True;
+    //Anti Heng
+
     with koneksi do begin
       HTTPOptions := [hoForceEncodeParams];
       Request.ContentType := kontentipe;
       HandleRedirects := true;
       hasil_fungsi := Post(urlnya,isi_request_post);
+      ProtocolVersion := pv1_1;
     end;
+    koneksi.Free;
+    IOHendelnya.Free;
+    AntiHeng.Active:=False;
+    AntiHeng.Free;
   except on E: Exception do
     hasil_fungsi := 'error';
   end;
@@ -138,6 +160,7 @@ function hubungkan_get(var urlnya : string; kontentipe : string) : string;
 var
   hasil_fungsi : string;
   koneksi : TIdHTTP;
+  IOHendelnya : TIdIOHandler;
 begin
   try
     koneksi := TIdHTTP.Create(nil);
@@ -156,7 +179,7 @@ end;
 
 procedure TForm1.baca_json_post;
 begin
-  urlnya := 'http://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
+  urlnya := 'https://mediasoftsolusindo.com/api_belajar.php?modul=tampil_api_belajar';
   postRequest := TStringList.Create;
   postRequest.Add('pengguna=Riko');
   postRequest.Add('sandi=riko_software');
@@ -198,6 +221,11 @@ end;
 procedure TForm1.baca_json_get;
 begin
   urlnya := 'https://www.w3schools.com/angular/customers.php';
+
+  postRequest := TStringList.Create;
+  postRequest.Add('pengguna=Riko');
+  postRequest.Add('sandi=riko_software');
+
   Memo1.Lines.Clear;
   try
     hasil := hubungkan_get(urlnya,'application/x-www-form-urlencoded');

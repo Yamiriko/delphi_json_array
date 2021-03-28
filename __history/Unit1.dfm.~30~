@@ -62,6 +62,7 @@ object Form1: TForm1
     Height = 25
     Caption = 'GET'
     TabOrder = 2
+    OnClick = btnGetClick
   end
   object btnPost: TButton
     Left = 417
@@ -72,7 +73,7 @@ object Form1: TForm1
     TabOrder = 3
     OnClick = btnPostClick
   end
-  object Edit1: TEdit
+  object edtStatus: TEdit
     Left = 616
     Top = 22
     Width = 240
@@ -81,6 +82,7 @@ object Form1: TForm1
     TabOrder = 4
   end
   object IdHTTP1: TIdHTTP
+    IOHandler = IdSSLIOHandlerSocketOpenSSL1
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -94,7 +96,37 @@ object Form1: TForm1
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 8
-    Top = 392
+    Left = 32
+    Top = 376
+  end
+  object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
+    MaxLineAction = maException
+    Port = 0
+    DefaultPort = 0
+    SSLOptions.Method = sslvSSLv23
+    SSLOptions.SSLVersions = [sslvSSLv2, sslvSSLv3, sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2]
+    SSLOptions.Mode = sslmUnassigned
+    SSLOptions.VerifyMode = []
+    SSLOptions.VerifyDepth = 0
+    Left = 160
+    Top = 368
+  end
+  object NetHTTPClient1: TNetHTTPClient
+    Asynchronous = False
+    ConnectionTimeout = 60000
+    ResponseTimeout = 60000
+    HandleRedirects = True
+    AllowCookies = True
+    UserAgent = 'Embarcadero URI Client/1.0'
+    SecureProtocols = [SSL2, SSL3, TLS1, TLS11, TLS12]
+    Left = 408
+    Top = 336
+  end
+  object NetHTTPRequest1: TNetHTTPRequest
+    Asynchronous = False
+    ConnectionTimeout = 0
+    ResponseTimeout = 0
+    Left = 560
+    Top = 336
   end
 end
