@@ -120,19 +120,19 @@ function hubungkan_post(var urlnya : string; isi_request_post : TStringList; kon
 var
   hasil_fungsi : string;
   koneksi : TIdHTTP;
-  IOHendelnya : TIdSSLIOHandlerSocketOpenSSL;
+  IOHendel : TIdSSLIOHandlerSocketOpenSSL;
   AntiHeng : TIdAntiFreeze;
 begin
   try
     koneksi := TIdHTTP.Create(nil);
 
-    //Konek Ke HTTPS
-    IOHendelnya := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-    IOHendelnya.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
-    //Konek Ke HTTPS
+    //Hendel HTTPS
+    IOHendel :=  TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+    IOHendel.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
+    //Hendel HTTPS
 
     //Anti Heng
-    AntiHeng := TIdAntiFreeze.Create(nil);
+    AntiHeng:=TIdAntiFreeze.Create(nil);
     AntiHeng.IdleTimeOut:=500;
     AntiHeng.OnlyWhenIdle:=True;
     AntiHeng.Active:=True;
@@ -145,12 +145,15 @@ begin
       hasil_fungsi := Post(urlnya,isi_request_post);
       ProtocolVersion := pv1_1;
     end;
-    koneksi.Free;
-    IOHendelnya.Free;
     AntiHeng.Active:=False;
     AntiHeng.Free;
+    koneksi.Free;
+
   except on E: Exception do
-    hasil_fungsi := 'error';
+    begin
+      hasil_fungsi := 'Error : ' + E.Message;
+      MessageDlg(hasil_fungsi,mtError,[mbOK],0);
+    end;
   end;
 
   Result := hasil_fungsi;

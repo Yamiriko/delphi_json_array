@@ -14,14 +14,11 @@ type
   TForm1 = class(TForm)
     Memo1: TMemo;
     Label1: TLabel;
-    IdHTTP1: TIdHTTP;
     Grid: TStringGrid;
     btnGet: TButton;
     btnPost: TButton;
     Label2: TLabel;
     edtStatus: TEdit;
-    IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
-    IdAntiFreeze1: TIdAntiFreeze;
     procedure btnPostClick(Sender: TObject);
     procedure btnGetClick(Sender: TObject);
   private
@@ -123,9 +120,24 @@ function hubungkan_post(var urlnya : string; isi_request_post : TStringList; kon
 var
   hasil_fungsi : string;
   koneksi : TIdHTTP;
+  IOHendel : TIdSSLIOHandlerSocketOpenSSL;
+  AntiHeng : TIdAntiFreeze;
 begin
   try
     koneksi := TIdHTTP.Create(nil);
+
+    //Hendel HTTPS
+    IOHendel :=  TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+    IOHendel.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
+    //Hendel HTTPS
+
+    //Anti Heng
+    AntiHeng:=TIdAntiFreeze.Create(nil);
+    AntiHeng.IdleTimeOut:=500;
+    AntiHeng.OnlyWhenIdle:=True;
+    AntiHeng.Active:=True;
+    //Anti Heng
+
     with koneksi do begin
       HTTPOptions := [hoForceEncodeParams];
       Request.ContentType := kontentipe;
@@ -133,6 +145,9 @@ begin
       hasil_fungsi := Post(urlnya,isi_request_post);
       ProtocolVersion := pv1_1;
     end;
+    AntiHeng.Active:=False;
+    AntiHeng.Free;
+    koneksi.Free;
   except on E: Exception do
     hasil_fungsi := 'error';
   end;
@@ -144,6 +159,7 @@ function hubungkan_get(var urlnya : string; kontentipe : string) : string;
 var
   hasil_fungsi : string;
   koneksi : TIdHTTP;
+  IOHendelnya : TIdIOHandler;
 begin
   try
     koneksi := TIdHTTP.Create(nil);
