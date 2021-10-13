@@ -21,6 +21,7 @@ type
     edtStatus: TEdit;
     procedure btnPostClick(Sender: TObject);
     procedure btnGetClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     procedure baca_json_post;
@@ -40,6 +41,7 @@ var
   postRequest : TStringList;
   hasil: string;
   i : integer;
+  TipeKonten : string;
 
 implementation
 
@@ -95,6 +97,12 @@ begin
   end;
 end;
 
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  //Tetapkan Tipe Konten Saat Load form
+  TipeKonten := 'application/x-www-form-urlencoded';
+end;
+
 procedure TForm1.buattabel_get;
 begin
   with Grid do begin
@@ -116,68 +124,124 @@ begin
   end;
 end;
 
-function hubungkan_post(var urlnya : string; isi_request_post : TStringList; kontentipe : string) : string;
+function IdRequestPost(const formnya : TForm; urlnya: string ;
+const parameter : TStringList; const kontentipe: string): string;
 var
-  hasil_fungsi : string;
-  koneksi : TIdHTTP;
+  komponen : TIdHTTP;
   IOHendel : TIdSSLIOHandlerSocketOpenSSL;
+  hasil : string;
   AntiHeng : TIdAntiFreeze;
 begin
+  komponen := TIdHTTP.Create(formnya);
+  IOHendel :=  TIdSSLIOHandlerSocketOpenSSL.Create(formnya);
+  AntiHeng := TIdAntiFreeze.Create(formnya);
   try
-    koneksi := TIdHTTP.Create(nil);
-
-    //Hendel HTTPS
-    IOHendel :=  TIdSSLIOHandlerSocketOpenSSL.Create(nil);
     IOHendel.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
-    //Hendel HTTPS
-
-    //Anti Heng
-    AntiHeng:=TIdAntiFreeze.Create(nil);
-    AntiHeng.IdleTimeOut:=500;
-    AntiHeng.OnlyWhenIdle:=True;
-    AntiHeng.Active:=True;
-    //Anti Heng
-
-    with koneksi do begin
+    with AntiHeng do begin
+      IdleTimeOut:=10000;
+      Active:=True;
+    end;
+    with komponen do begin
       HTTPOptions := [hoForceEncodeParams];
+      IOHandler:=IOHendel;
       Request.ContentType := kontentipe;
       HandleRedirects := true;
-      hasil_fungsi := Post(urlnya,isi_request_post);
-      ProtocolVersion := pv1_1;
+      hasil := Post(urlnya,parameter);
     end;
     AntiHeng.Active:=False;
-    AntiHeng.Free;
-    koneksi.Free;
-
   except on E: Exception do
     begin
-      hasil_fungsi := 'Error : ' + E.Message;
-      MessageDlg(hasil_fungsi,mtError,[mbOK],0);
+      hasil:='Error : ' + E.Message;
     end;
   end;
-
-  Result := hasil_fungsi;
+  parameter.Free;
+  komponen.Free;
+  IOHendel.Free;
+  IdRequestPost:=hasil;
+  AntiHeng.Free;
 end;
 
-function hubungkan_get(var urlnya : string; kontentipe : string) : string;
+function IdRequestGet(const formnya : TForm; urlnya: string ;
+const kontentipe: string): string;
 var
-  hasil_fungsi : string;
-  koneksi : TIdHTTP;
-  IOHendelnya : TIdIOHandler;
+  komponen : TIdHTTP;
+  IOHendel : TIdSSLIOHandlerSocketOpenSSL;
+  hasil : string;
+  AntiHeng : TIdAntiFreeze;
 begin
+  komponen := TIdHTTP.Create(formnya);
+  IOHendel :=  TIdSSLIOHandlerSocketOpenSSL.Create(formnya);
   try
-    koneksi := TIdHTTP.Create(nil);
-    with koneksi do begin
+    IOHendel.SSLOptions.SSLVersions:=[sslvTLSv1_1,sslvTLSv1_2];
+    with AntiHeng do begin
+      IdleTimeOut:=10000;
+      Active:=True;
+    end;
+    with komponen do begin
       HTTPOptions := [hoForceEncodeParams];
+      IOHandler:=IOHendel;
       Request.ContentType := kontentipe;
       HandleRedirects := true;
-      hasil_fungsi := get(urlnya);
+      hasil := Get(urlnya);
     end;
   except on E: Exception do
-    hasil_fungsi := 'error';
+    begin
+      hasil:='Error : ' + E.Message;
+    end;
   end;
+  komponen.Free;
+  IOHendel.Free;
+  IdRequestGet:=hasil;
+end;
 
-  Result := hasil_fungsi;
+function NetRequestPost(const formnya : TForm; const urlnya: string ;
+const parameter : TStringList; const kontentipe: string): string;
+var
+  komponen : TNetHTTPClient;
+  hasil : string;
+begin
+  komponen := TNetHTTPClient.Create(formnya);
+  try
+    with komponen do begin
+      ContentType:=kontentipe;
+      SecureProtocols:=[THTTPSecureProtocol.TLS11,THTTPSecureProtocol.TLS12];
+      AllowCookies:=True;
+      HandleRedirects:=True;
+      ConnectionTimeout:=10000;
+    end;
+    hasil:=komponen.Post(urlnya,parameter,nil,TEncoding.UTF8).ContentAsString(TEncoding.Default);
+  except on E: Exception do
+    begin
+      hasil:='Error : ' + E.Message;
+    end;
+  end;
+  komponen.Free;
+  NetRequestPost:=hasil;
+end;
+
+function NetRequestGet(const formnya : TForm; const urlnya: string;
+const kontentipe: string): string;
+var
+  komponen : TNetHTTPClient;
+  hasil : string;
+begin
+  komponen := TNetHTTPClient.Create(formnya);
+  try
+    with komponen do begin
+      ContentType:=kontentipe;
+      SecureProtocols:=[THTTPSecureProtocol.TLS11,THTTPSecureProtocol.TLS12];
+      AllowCookies:=True;
+      HandleRedirects:=True;
+      ConnectionTimeout:=10000;
+    end;
+    hasil:=komponen.Get(urlnya,nil).ContentAsString(TEncoding.Default);
+  except on E: Exception do
+    begin
+      hasil:='Error : ' + E.Message;
+    end;
+  end;
+  komponen.Free;
+  NetRequestGet:=hasil;
 end;
 
 procedure TForm1.baca_json_post;
@@ -188,7 +252,7 @@ begin
   postRequest.Add('sandi=riko_software');
   Memo1.Lines.Clear;
   try
-    hasil := hubungkan_post(urlnya,postRequest,'application/x-www-form-urlencoded');
+    hasil := NetRequestPost(Self,urlnya,postRequest,TipeKonten);
     Memo1.Lines.Add(hasil);
 
     js := TlkJSON.ParseText(hasil) as TlkJSONObject;
@@ -217,21 +281,19 @@ begin
     edtStatus.Text := VarToStr(js_pesan.Field['pesan'].Value);
     js_pesan.Free;
   except on E: Exception do
-    Memo1.Lines.Add('Error bro : '#13#10 + E.Message);
+    Memo1.Lines.Add('Error bro modul POST : '#13#10 + E.Message);
   end;
 end;
 
 procedure TForm1.baca_json_get;
+var TipeKonten : string;
 begin
-  urlnya := 'https://www.w3schools.com/angular/customers.php';
-
-  postRequest := TStringList.Create;
-  postRequest.Add('pengguna=Riko');
-  postRequest.Add('sandi=riko_software');
+  TipeKonten:='application/x-www-form-urlencoded';
+  urlnya := 'http://www.w3schools.com/angular/customers.php';
 
   Memo1.Lines.Clear;
   try
-    hasil := hubungkan_get(urlnya,'application/x-www-form-urlencoded');
+    hasil := NetRequestGet(Self,urlnya,TipeKonten);
     Memo1.Lines.Add(hasil);
 
     js := TlkJSON.ParseText(hasil) as TlkJSONObject;
@@ -255,7 +317,7 @@ begin
     //tampilkan status jsonnya ke edtStatus
     edtStatus.Text := 'Tidak Ada Statusnya';
   except on E: Exception do
-    Memo1.Lines.Add('Error bro : '#13#10 + E.Message);
+    Memo1.Lines.Add('Error bro modul GET : '#13#10 + E.Message);
   end;
 end;
 

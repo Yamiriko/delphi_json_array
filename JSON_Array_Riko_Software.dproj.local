@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2018/07/05 20:53:36.000.228,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2018/07/25 13:43:09.000.496,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2018/07/25 16:10:18.000.879,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2020/01/08 06:33:05.000.389,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2020/01/08 06:37:11.000.820,C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas=D:\Projek Delphi\JSON Array Riko Sofware\Unit1.pas</Transaction>
-    <Transaction>2020/01/08 06:37:11.000.820,C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.dfm=D:\Projek Delphi\JSON Array Riko Sofware\Unit1.dfm</Transaction>
-    <Transaction>2020/01/08 06:38:17.000.375,C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Project1.dproj=D:\Projek Delphi\JSON Array Riko Sofware\JSON_Array_Riko_Software.dproj</Transaction>
+    <Transaction>2018/07/05 20.00.00.000.228,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/07/25 13.00.00.000.496,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/07/25 16.00.00.000.879,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/08 06.00.00.000.389,=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/08 06.00.00.000.820,D:\Projek Delphi\JSON Array Riko Sofware\Unit1.pas=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/08 06.00.00.000.375,D:\Projek Delphi\JSON Array Riko Sofware\JSON_Array_Riko_Software.dproj=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2020/01/08 06.00.00.000.820,D:\Projek Delphi\JSON Array Riko Sofware\Unit1.dfm=C:\Users\Yamiriko02\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
   </Transactions>
 </BorlandProject>
